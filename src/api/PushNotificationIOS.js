@@ -72,7 +72,8 @@ class PushNotificationIOS {
   static addEventListener(type, handler) {
     invariant(
       type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
+      'PushNotificationIOS only supports `notification`, `register`, ' +
+      '`registrationError`, and `localNotification` events'
     );
     let listener;
     if (type === 'notification') {
@@ -159,7 +160,8 @@ class PushNotificationIOS {
   static removeEventListener(type, handler) {
     invariant(
       type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
+      'PushNotificationIOS only supports `notification`, `register`, ' +
+      '`registrationError`, and `localNotification` events'
     );
     const listener = _notifHandlers.get(handler);
     if (!listener) {
