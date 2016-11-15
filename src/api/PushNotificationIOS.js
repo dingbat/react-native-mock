@@ -6,6 +6,8 @@ let _initialNotification = null;
 
 const DEVICE_NOTIF_EVENT = 'remoteNotificationReceived';
 const NOTIF_REGISTER_EVENT = 'remoteNotificationsRegistered';
+const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
+const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
 class PushNotificationIOS {
   /**
@@ -69,8 +71,8 @@ class PushNotificationIOS {
    */
   static addEventListener(type, handler) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     let listener;
     if (type === 'notification') {
@@ -83,6 +85,20 @@ class PushNotificationIOS {
     } else if (type === 'register') {
       listener = DeviceEventEmitter.addListener(
         NOTIF_REGISTER_EVENT,
+        (registrationInfo) => {
+          handler(registrationInfo.deviceToken);
+        }
+      );
+    } else if (type === 'registrationError') {
+      listener = DeviceEventEmitter.addListener(
+        NOTIF_REGISTRATION_ERROR_EVENT,
+        (registrationInfo) => {
+          handler(registrationInfo.deviceToken);
+        }
+      );
+    } else if (type === 'localNotification') {
+      listener = DeviceEventEmitter.addListener(
+        DEVICE_LOCAL_NOTIF_EVENT,
         (registrationInfo) => {
           handler(registrationInfo.deviceToken);
         }
@@ -142,8 +158,8 @@ class PushNotificationIOS {
    */
   static removeEventListener(type, handler) {
     invariant(
-      type === 'notification' || type === 'register',
-      'PushNotificationIOS only supports `notification` and `register` events'
+      type === 'notification' || type === 'register' || type === 'registrationError' || type === 'localNotification',
+      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events'
     );
     const listener = _notifHandlers.get(handler);
     if (!listener) {
