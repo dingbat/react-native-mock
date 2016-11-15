@@ -122,7 +122,7 @@ class PushNotificationIOS {
    * will be requested.
    */
   static requestPermissions(permissions) {
-
+    return new Promise((resolve, reject) => resolve({}));
   }
 
   /**
