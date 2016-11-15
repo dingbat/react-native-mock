@@ -10,6 +10,10 @@ const NOTIF_REGISTRATION_ERROR_EVENT = 'remoteNotificationRegistrationError';
 const DEVICE_LOCAL_NOTIF_EVENT = 'localNotificationReceived';
 
 class PushNotificationIOS {
+  static __sendEvent__(type, data) {
+    _notifHandlers.get(type)(data);
+  }
+
   /**
    * Schedules the localNotification for immediate presentation.
    *
@@ -77,35 +81,35 @@ class PushNotificationIOS {
     );
     let listener;
     if (type === 'notification') {
-      listener = DeviceEventEmitter.addListener(
-        DEVICE_NOTIF_EVENT,
-        (notifData) => {
+      listener = {
+        type: DEVICE_NOTIF_EVENT,
+        handler: (notifData) => {
           handler(new PushNotificationIOS(notifData));
-        }
-      );
+        },
+      };
     } else if (type === 'register') {
-      listener = DeviceEventEmitter.addListener(
-        NOTIF_REGISTER_EVENT,
-        (registrationInfo) => {
+      listener = {
+        type: NOTIF_REGISTER_EVENT,
+        handler: (registrationInfo) => {
           handler(registrationInfo.deviceToken);
-        }
-      );
+        },
+      };
     } else if (type === 'registrationError') {
-      listener = DeviceEventEmitter.addListener(
-        NOTIF_REGISTRATION_ERROR_EVENT,
-        (registrationInfo) => {
+      listener = {
+        type: NOTIF_REGISTRATION_ERROR_EVENT,
+        handler: (registrationInfo) => {
           handler(registrationInfo.deviceToken);
-        }
-      );
+        },
+      };
     } else if (type === 'localNotification') {
-      listener = DeviceEventEmitter.addListener(
-        DEVICE_LOCAL_NOTIF_EVENT,
-        (registrationInfo) => {
+      listener = {
+        type: DEVICE_LOCAL_NOTIF_EVENT,
+        handler: (registrationInfo) => {
           handler(registrationInfo.deviceToken);
-        }
-      );
+        },
+      };
     }
-    _notifHandlers.set(handler, listener);
+    _notifHandlers.set(listener.type, listener.handler);
   }
 
   /**
